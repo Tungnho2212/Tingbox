@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biểu đồ giao dịch</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121826;
+            color: white;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-container {
+            flex: 1;
+            max-width: 70%; /* Tăng từ 50% lên 60% */
+            min-height: 500px; /* Tăng chiều cao */
+        }
+
+        .transactions-container {
+            flex: 1;
+            max-width: 40%; /* Giảm xuống để nhường chỗ cho biểu đồ */
+            min-height: 500px; /* Tăng chiều cao */
+            overflow-y: auto;
+}
+
+        .transaction-item {
+            padding: 10px;
+            border-bottom: 1px solid #2a2f45;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Biểu đồ -->
+    <div class="chart-container">
+        <h2 class="text-center">Biểu đồ dòng tiền theo tháng</h2>
+        <canvas id="transactionChart" style="max-height: 400px;"></canvas>
+    </div>
+
+    <!-- Danh sách giao dịch -->
+<div class="transactions-container">
+    <h2 style="text-align: center;">Giao dịch gần nhất</h2>
+    {{#each transactions}}
+    <div class="transaction" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <p><strong>Mã giao dịch:</strong> {{this.id}}</p>
+        <p><strong>Ngày:</strong> {{this.transaction_date}}</p>
+        <p><strong>Nội dung:</strong> {{this.transaction_content}}</p>
+        <p style="color: {{#if this.amount_in}}green{{else}}red{{/if}};">
+            {{#if this.amount_in}} +{{this.amount_in}} đ {{/if}}
+            {{#if this.amount_out}} -{{this.amount_out}} đ {{/if}}
+        </p>
+
+    </div>
+    {{/each}}
+</div>
+
+</div>
+
+<script>
+    const labels = {{{labels}}};
+    const dataIn = {{{dataIn}}};
+    const dataOut = {{{dataOut}}};
+    const balance = {{{balance}}}; // Thêm số dư
+
+    const ctx = document.getElementById('transactionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Tiền vào',
+                    data: dataIn,
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                    fill: true
+                },
+                {
+                    label: 'Tiền ra',
+                    data: dataOut,
+                    borderColor: 'orange',
+                    backgroundColor: 'rgba(255, 165, 0, 0.2)',
+                    fill: true
+                },
+                {
+                    label: 'Balance',
+                    data: balance,
+                    borderColor: 'green',
+                    backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                    fill: false, // Không tô màu
+                    borderWidth: 2,
+                    pointRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao dịch theo ngày</title>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input, button {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tfoot td {
+    font-weight: bold;
+    background-color: #ddd;
+}
+</style>
+</head>
+<body>
+    <h2>Chọn khoảng thời gian để lọc giao dịch</h2>
+
+    <form action="/transaction/date-filter" method="get">
+        <label for="start">Từ ngày:</label>
+        <input type="date" id="start" name="start" value="{{start}}" required>
+
+        <label for="end">Đến ngày:</label>
+        <input type="date" id="end" name="end" value="{{end}}" required>
+
+        <button type="submit">Lọc</button>
+    </form>
+
+    {{#if transactions.length}}
+        <h3>Danh sách giao dịch từ {{start}} đến {{end}}</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ngày giao dịch</th>
+                    <th>Số tài khoản</th>
+                    <th>Số tiền vào</th>
+                    <th>Số tiền ra</th>
+                    <th>Nội dung</th>
+                    <th>Ngân hàng</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each transactions}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.transaction_date}}</td>
+                    <td>{{this.account_number}}</td>
+                    <td>{{this.amount_in}}</td>
+                    <td>{{this.amount_out}}</td>
+                    <td>{{this.transaction_content}}</td>
+                    <td>{{this.bank_brand_name}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"><b>Tổng cộng</b></td>
+                    <td><b>{{totalIn}}</b></td>
+                    <td><b>{{totalOut}}</b></td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    {{else}}
+        <p style="text-align: center;">Không có giao dịch nào trong khoảng thời gian này.</p>
+    {{/if}}
+</body>
+</html>

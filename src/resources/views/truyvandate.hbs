@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách giao dịch</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #121826; color: white; }
+        .container { margin-top: 20px; }
+        .transaction-item { padding: 10px; border-bottom: 1px solid #2a2f45; margin-bottom: 10px; border-radius: 10px; }
+        .chart-container { width: 100%; max-width: 800px; margin: auto; }
+        .filter-btn { margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Truy vấn giao dịch</h2>
+
+        <!-- Nút chọn thời gian -->
+        <div class="text-center">
+            <a href="?filter=week" class="btn btn-primary filter-btn">Tuần này</a>
+            <a href="?filter=month" class="btn btn-warning filter-btn">Tháng này</a>
+            <a href="?filter=year" class="btn btn-danger filter-btn">Năm nay</a>
+            <a href="?filter=default" class="btn btn-secondary filter-btn">3 ngày gần nhất</a>
+            <a href="?filter=all" class="btn btn-success filter-btn">Tất cả giao dịch</a>
+        </div>
+
+        <h2 class="text-center mt-5">Biểu đồ dòng tiền</h2>
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+        <div class="list-group mt-3">
+            {{#each transactions}}
+                <div class="list-group-item transaction-item">
+                    <p><strong>Mã giao dịch:</strong> {{this._id}}</p>
+                    <p><strong>Ngày:</strong> {{this.transaction_date}}</p>
+                    <p><strong>Nội dung:</strong> {{this.transaction_content}}</p>
+                    {{#if this.amount_in}}
+                        <p style="color: green;">+{{this.amount_in}} đ</p>
+                    {{else}}
+                        <p style="color: red;">-{{this.amount_out}} đ</p>
+                    {{/if}}
+                </div>
+            {{/each}}
+        </div>
+
+        <!-- Biểu đồ -->
+    </div>
+
+    <script>
+        // Lấy dữ liệu từ controller
+        const chartData = {{{chartData}}};
+
+        // Chuẩn bị dữ liệu cho biểu đồ
+        const labels = chartData.map(item => item._id);
+        const amountIn = chartData.map(item => item.total_in);
+        const amountOut = chartData.map(item => item.total_out);
+
+        // Vẽ biểu đồ bằng Chart.js
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Tiền vào',
+                        data: amountIn,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Tiền ra',
+                        data: amountOut,
+                        borderColor: 'orange',
+                        backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                        fill: true
+                    }
+                ]
+            }
+        });
+    </script>
+</body>
+</html>
